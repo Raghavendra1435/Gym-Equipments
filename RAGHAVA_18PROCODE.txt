@@ -1,0 +1,612 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(GymEcommerceApp());
+}
+
+class GymEcommerceApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Gym Equipments',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: LoginPage(),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  void _login(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      // Simulate login logic (replace with your authentication mechanism)
+      bool isAuthenticated = true; // Replace with actual authentication logic
+
+      if (isAuthenticated) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid credentials')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZxpAgcBXSWvWHaod_mTmU7LX67JEf9dFxQ8ukL9kC3k0xa-hf3reRpDqdfpNnfCEKdrc&usqp=CAU',
+            fit: BoxFit.cover,
+          ),
+          Container(
+            color: Colors.black.withOpacity(0.5),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Login',
+                    style: TextStyle(fontSize: 32, color: Colors.white),
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      labelStyle: TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.7),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your username';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      labelStyle: TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.7),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => _login(context),
+                    child: Text('Login'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      textStyle: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  final List<Map<String, String>> products = [
+    {
+      'name': 'Dumbbells',
+      'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtiYm11TRwUPiZo5lhEtiJq_EFQ0R6CkIp3g&s',
+      'price': '500.00',
+    },
+    {
+      'name': 'Treadmill',
+      'image': 'https://5.imimg.com/data5/SA/KR/MY-3255634/motorized-treadmills-t-1600.jpg',
+      'price': '5000.00',
+    },
+    {
+      'name': 'Kettlebells',
+      'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDeUliBeqPPzVFhqz38Y9uArCB8ejyZodvcA&s',
+      'price': '330.00',
+    },
+    {
+      'name': 'Exercise Bike',
+      'image': 'https://m.media-amazon.com/images/I/614JIdJxjiL.SL1500.jpg',
+      'price': '300.00',
+    },
+    {
+      'name': 'Chest Machine',
+      'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQD1Q1jolNHcUi6ta8mrsmIJ0km18YJeuwj5A&s',
+      'price': '500.00',
+    },
+    {
+      'name': 'Squats Machine',
+      'image': 'https://m.media-amazon.com/images/I/61M0aHE7CtL.AC_UF894,1000_QL80.jpg',
+      'price': '500.00',
+    },
+  ];
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late List<Map<String, String>> _filteredProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredProducts = widget.products;
+  }
+
+  void _filterProducts(String query) {
+    query = query.toLowerCase();
+    setState(() {
+      _filteredProducts = widget.products.where((product) {
+        final productName = product['name']!.toLowerCase();
+        return productName.contains(query);
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Gym Equipments'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showSearch(context: context, delegate: ProductSearch(products: widget.products, filterProducts: _filterProducts));
+            },
+            icon: Icon(Icons.search),
+          ),
+        ],
+      ),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemCount: _filteredProducts.length,
+        itemBuilder: (context, index) {
+          return ProductCard(product: _filteredProducts[index]);
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'About',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (int index) {
+          switch (index) {
+            case 0:
+              // Home tab tapped
+              break;
+            case 1:
+              // About tab tapped
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AboutPage()),
+              );
+              break;
+            case 2:
+              // Profile tab tapped
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+              break;
+            default:
+              break;
+          }
+        },
+      ),
+    );
+  }
+}
+
+class AboutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('About'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'This is the about page.',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Hello everyone, I\'m Raghvendra from final BCA 1.',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'This project showcases what I\'ve learned in previous classes.',
+              style: TextStyle(fontSize: 16),
+            ),
+            Text(
+              'Hope you all like this page and happy shopping!',
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _addressController = TextEditingController();
+
+  void _saveProfile(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      // Save profile logic can be implemented here
+      // For demonstration purposes, print the values
+      print('Name: ${_nameController.text}');
+      print('Email: ${_emailController.text}');
+      print('Mobile: ${_mobileController.text}');
+      print('Address: ${_addressController.text}');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile saved successfully!')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: 'Name'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: 'Email'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _mobileController,
+                  decoration: InputDecoration(labelText: 'Mobile'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your mobile number';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(labelText: 'Address'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your address';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () => _saveProfile(context),
+                    child: Text('Save'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Map<String, String> product;
+
+  ProductCard({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      margin: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProductDetailPage(product: product)),
+                );
+              },
+              child: product['image']!.startsWith('http')
+                  ? Image.network(product['image']!, fit: BoxFit.cover)
+                  : Image.asset(product['image']!, fit: BoxFit.cover),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product['name']!,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  '\$${product['price']}',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProductDetailPage extends StatefulWidget {
+  final Map<String, String> product;
+
+  ProductDetailPage({required this.product});
+
+  @override
+  _ProductDetailPageState createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _addressController = TextEditingController();
+
+  void _submitOrder(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      // Process the order here, for example, send to a backend server
+      // In this example, we just print the details
+      print('Order Details:');
+      print('Product: ${widget.product['name']}');
+      print('Price: \$${widget.product['price']}');
+      print('Name: ${_nameController.text}');
+      print('Email: ${_emailController.text}');
+      print('Mobile: ${_mobileController.text}');
+      print('Address: ${_addressController.text}');
+
+      // Show success message or navigate back to previous page
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Order placed successfully!')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.product['name']!),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            widget.product['image']!.startsWith('http')
+                ? Image.network(widget.product['image']!, height: 200)
+                : Image.asset(widget.product['image']!, height: 200),
+            SizedBox(height: 20),
+            Text(widget.product['name']!, style: TextStyle(fontSize: 24)),
+            Text('\$${widget.product['price']}', style: TextStyle(fontSize: 24)),
+            SizedBox(height: 20),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(labelText: 'Name'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _mobileController,
+                    decoration: InputDecoration(labelText: 'Mobile'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your mobile number';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: _addressController,
+                    decoration: InputDecoration(labelText: 'Address'),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your address';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () => _submitOrder(context),
+                    child: Text('Submit Order'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProductSearch extends SearchDelegate<String> {
+  final List<Map<String, String>> products;
+  final Function(String) filterProducts;
+
+  ProductSearch({required this.products, required this.filterProducts});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+          filterProducts(query);
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return buildSuggestions(context);
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final List<Map<String, String>> suggestionList = query.isEmpty
+        ? products
+        : products.where((product) {
+            final productName = product['name']!.toLowerCase();
+            return productName.contains(query.toLowerCase());
+          }).toList();
+
+    return ListView.builder(
+      itemCount: suggestionList.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(suggestionList[index]['name']!),
+          onTap: () {
+            // You can navigate to the product details page here if needed
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProductDetailPage(product: suggestionList[index])),
+            );
+          },
+        );
+      },
+    );
+  }
+}
